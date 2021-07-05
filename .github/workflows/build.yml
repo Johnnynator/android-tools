@@ -57,7 +57,12 @@ jobs:
             pkgs: clang
             env1: "CC=clang CXX=clang++"
           - os: "ubuntu:20.04"
+            arch: "amd64"
             pkgs: "gcc-10 g++-10"
+            env1: "CC=gcc-10 CXX=g++-10"
+          - os: "ubuntu:20.04"
+            arch: "i386"
+            pkgs: "gcc-10:i386 g++-10:i386"
             env1: "CC=gcc-10 CXX=g++-10"
           - os: "ubuntu:20.04"
             pkgs: "clang-11"
@@ -89,12 +94,15 @@ jobs:
       - name: prep ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: |
+          dpkg --add-architecture i386
           apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq
           DEBIAN_FRONTEND=noninteractive apt-get install -yq \
-            ${{ matrix.pkgs }} cmake git golang libbrotli-dev libfmt-dev \
-            libgtest-dev liblz4-dev libpcre2-dev libprotobuf-dev libunwind-dev \
-            libusb-1.0-0-dev libzstd-dev pkg-config protobuf-compiler ninja-build
-
+            ${{ matrix.pkgs }} cmake git golang libbrotli-dev:${{ matrix.arch }} \
+            libfmt-dev:${{ matrix.arch }} libgtest-dev:${{ matrix.arch }} liblz4-dev:${{ matrix.arch }} \
+            libpcre2-dev:${{ matrix.arch }} libprotobuf-dev:${{ matrix.arch }} libunwind-dev:${{ matrix.arch }} \
+            libusb-1.0-0-dev:${{ matrix.arch }} libzstd-dev:${{ matrix.arch }} ninja-build \
+            protobuf-compiler:${{ matrix.arch }} pkg-config:${{ matrix.arch }}
       - name: prep alpine
         if: startsWith(matrix.os, 'alpine')
         run: |
